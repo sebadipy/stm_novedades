@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Novedades STM</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    /* Estilos base ajustados */
+    body { 
+        background:#f4f4f4; 
+        padding: 5px 20px 20px 20px;
+        font-family:Roboto, sans-serif; 
+    }
+    
+    .carousel-item { 
+        height: auto;
+        min-height: 280px; 
+        max-height: 550px;
+        background:#444; 
+        color:white; 
+        position:relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .carousel-item img { 
+        object-fit: cover; 
+        width: 100%; 
+        height: 100%; 
+        position: absolute; 
+        opacity: 0.55; 
+    }
+
+    /* Estilos para el nuevo contenedor de flechas */
+    .carousel-controls-bottom {
+        display: flex; /* Para poner los botones uno al lado del otro */
+        justify-content: center; /* Para centrarlos */
+        gap: 15px; /* Espacio entre los botones */
+        margin-top: 15px; /* Espacio arriba del control */
+    }
+
+    /* Estilo de los botones de navegación inferiores */
+    .btn-carousel-nav {
+        background-color: #5d3f6a; /* Color principal del STM */
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        font-weight: bold;
+        font-size: 1.2rem;
+        line-height: 1; /* Para que el texto quede centrado */
+        display: flex; /* Para centrar el ícono o texto */
+        align-items: center;
+        text-decoration: none; /* Para quitar el subrayado si fuera un <a> */
+    }
+
+    /* Estilos del ícono de Bootstrap que usamos para las flechas */
+    .btn-carousel-nav .bi {
+        font-size: 1.5rem;
+    }
+    
+    /* ******************************************************************* */
+    /* *** Flechas Laterales Antiguas (se desactivan quitando las etiquetas) *** */
+    /* ******************************************************************* */
+    /* El resto del CSS de la caption y el logo se mantiene igual */
+    
+    .carousel-caption { 
+        z-index: 10;
+        position: static;
+        color: #333;
+        background-color: white;
+        padding: 20px;
+        margin: 0;
+        border-radius: 8px;
+        text-align: center;
+        width: 100%;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+    }
+
+    .carousel-caption h3 {
+        color: #5d3f6a;
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .carousel-caption p {
+        font-size: 0.95rem;
+        line-height: 1.4;
+        color: #555;
+    }
+    
+    .logo-container { text-align: center; margin-bottom: 5px; } 
+    .logo-container img { max-width: 100px; height: auto; }
+</style>
+</head>
+<body>
+
+<div class="logo-container">
+    <img src="logo_STM.png" alt="Logo Sindicato de Trabajadores Municipales de General Pueyrredon">
+</div>
+
+<h2 class="text-center mb-4">🟣 Novedades STM</h2>
+
+<div id="novedadesCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators" id="carouselIndicators"></div>
+    <div class="carousel-inner" id="carouselInner">
+        <div class="carousel-item active">
+            <div class="carousel-caption">
+                <h3>Cargando novedades…</h3>
+            </div>
+        </div>
+    </div>
+    
+    </div>
+
+<div class="carousel-controls-bottom">
+    <button class="btn-carousel-nav" type="button" data-bs-target="#novedadesCarousel" data-bs-slide="prev">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+        </svg>
+    </button>
+    <button class="btn-carousel-nav" type="button" data-bs-target="#novedadesCarousel" data-bs-slide="next">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+        </svg>
+    </button>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ID de publicación de Google Sheets (Publicar > Web)
+const SHEET_ID = "1OZnWCvh9NpBaoZndAV1IPPqtNWgQnv8GMh6J2-l3wZo";
+const GID = "195669740";
+const URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${GID}`;
+
+function parseData(text) {
+    const json = JSON.parse(text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1));
+    const rows = json.table.rows;
+    return rows
+        .map(r => {
+            const c = r.c;
+            return {
+                titulo: c[1]?.v || "",
+                desc: c[2]?.v || "",
+                img: c[4]?.v || "", // columna opcional de imagen
+                activo: (c[3]?.v || "").toString().toUpperCase() === "SI"
+            };
+        })
+        .filter(r => r.activo);
+}
+
+async function loadData() {
+    const inner = document.getElementById("carouselInner");
+    const indicators = document.getElementById("carouselIndicators");
+    inner.innerHTML = "";
+    indicators.innerHTML = "";
+
+    try {
+        const res = await fetch(URL);
+        const text = await res.text();
+        if (!text.includes("google.visualization")) throw new Error("Hoja no publicada o permisos insuficientes.");
+
+        const novedades = parseData(text);
+        if (novedades.length === 0) {
+            inner.innerHTML = `<div class="carousel-item active"><div class="carousel-caption"><h3>Sin novedades activas</h3></div></div>`;
+            return;
+        }
+
+        novedades.forEach((n, i) => {
+            // indicadores
+            const ind = document.createElement("button");
+            ind.type = "button";
+            ind.dataset.bsTarget = "#novedadesCarousel";
+            ind.dataset.bsSlideTo = i;
+            if (i === 0) ind.classList.add("active");
+            indicators.appendChild(ind);
+
+            // item
+            const item = document.createElement("div");
+            item.className = "carousel-item" + (i === 0 ? " active" : "");
+
+            if (n.img) {
+                const img = document.createElement("img");
+                img.src = n.img;
+                item.appendChild(img);
+            }
+
+            const cap = document.createElement("div");
+            cap.className = "carousel-caption";
+            cap.innerHTML = `<h3>${n.titulo}</h3><p>${n.desc}</p>`; 
+            item.appendChild(cap);
+            inner.appendChild(item);
+        });
+
+    } catch (e) {
+        inner.innerHTML = `<div class="carousel-item active"><div class="carousel-caption"><h3>Error al cargar</h3><p>${e.message}</p></div></div>`;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", loadData);
+</script>
+
+</body>
+</html>
